@@ -1,0 +1,179 @@
+PROBLEM STATEMENT :
+     Implementation of Sudoku puzzle for 9*9 matrix using backtracking design technique.
+
+          Sudoku has a logic-based, N-row and N-column size, and the 1-N numbers are table-locating pseudo-words in the Same row, same column and sub-square. Sudoku is a puzzle that opens minds of our day and is among the mind sports with The help of brainstorming. Sudoku is a kind of puzzle that has always attracted the attention of people, as it increases the Curves of the brain, gives those different points of view, gives them problem solving ability and develops individuals on Alternative solutions.
+
+ HOW TO SOLVE THE SUDOKU PUZZLE(9X9) :
+         This Sudoku consists of a 9×9 square grid containing 81 Cells.[2]The grid is sub divided into nine 3×3 blocks. Some of The 81 cells are filled in with numbers from {1,2,3,4,5,6,7,8,9}. These filled-in cells are called givens or clues. The goal of The player is to fill in the whole grid using the nine digits so That each row, column and block contains each number Exactly once and this constraint on the rows, columns, and Blocks is known as One Rule. 
+      The solution of a Sudoku Puzzle requires that every row, column and block contain all The numbers in the set[1,2,….9] and every cell will be Occupied by only one number.Most frequently a 9×9 grid made up of 3×3 sub grids, Starting with several numerals given in some of the cells (“givens”). Each row, column, and region or Block must Contain only one instance of each numeral. 
+
+A sudoku solution must satisfy all of the following rules:
+
+    • Each of the digits 1-9 must occur exactly once in each row.
+    • Each of the digits 1-9 must occur exactly once in each column.
+    • Each of the digits 1-9 must occur exactly once in each of the 3x3 sub-boxes of the grid.
+
+ALGORITHM DESIGN TECHNIQUE USED:
+         boolean Solve(choice = some_previous_choice):
+   {
+    		   If this choice does not lead to some more other choices
+    			{
+        		          	If this choice is the desired goal state
+            				return true
+        			    else
+            				return false
+    	                   	}
+         If this choice further has multiple options  to be checked
+                  {
+                      For each further choice
+                        {
+            check if this choice suceeds by calling Solve(current_choice)
+            	             if Solve(this choice)
+                             return true
+                      }
+                  }
+   		      return false
+        }
+
+
+
+
+
+    ANALYSIS OF THE ALGORITHM USED:
+Time Complexity: O(n ^ m) where n is the number of possibilities for each square (i.e 9 in classic Sudoku) and m is the number of spaces that are blank.
+      The problem can be designed for a grid size of N*N where N is a perfect square. For such an N, let M = N*N, the recurrence equation can be written as
+                       T(M) = 9*T(M-1) + O(1)
+      where T(N) is the running time of the solution for a problem size of N. Solving this recurrence will yield, O(9^M).
+Space complexity: 
+          The space complexity of Sudoku puzzle using backtracking design technique is O(n*n).
+       To store the output array a matrix is needed.
+
+
+
+
+
+
+
+
+CODING PART :
+
+#include<iostream>
+#include <cstdio>
+using namespace std;
+#include<math.h>
+#define MAX 25
+
+int takeInput(int sudoku[MAX][MAX])
+{
+    int size = 0;
+    { cout<<"\n\t\t\t***********************************************************************************\n\n";
+        cout<<"\t\t\t\tSUDOKU PUZZLE FOR 9 X 9 MATRIX USING BACKTRACKING DESIGN TECHNIQUE\t\t\t\t\n\n";  cout<<"\t\t\t*************************************************************************************\n";
+            size = 9;
+    }
+     cout<<"\t\t\t\t\t";
+     cout<<"Enter the Initial "<<size<<" X "<<size<<" Sudoku Board:"<<endl;
+    cout<<"\t\t\t\t\t[****Instruction : Enter 0 for blank****]"<<endl;
+    cout<<"\t\t\t\t\t\t";
+    for(int i=0;i<size;i++)
+        for(int j=0;j<size; j++)
+            cin>>sudoku[i][j];
+    return size;
+}
+
+//Function to display solved Sudoku Board
+void displaySolution(int sudoku[MAX][MAX], int size)
+{
+    for(int i=0;i<size;i++)
+    {
+        for(int j=0;j<size; j++)
+            printf("%4d", sudoku[i][j]);
+         cout<<endl;
+    }
+    cout<<"\n\t\t\t\n************************************************************************************\n\n";
+}
+
+bool isFull(int sudoku[MAX][MAX], int size)
+{
+    int i,j;
+    for(i=0;i<size;i++)
+        for(j=0;j<size;j++)
+            if(!sudoku[i][j])
+                return false;
+    return true;
+}
+int findPossibleValues(int sudoku[MAX][MAX], int size, int a[], int r, int c)
+{
+    int n=0;
+    int i,j;
+    int s=(int)(sqrt(size));
+    int b[MAX+1]={0};
+
+    //Note no.s appeared in current row
+    for(i=0; i<size; i++)
+        b[sudoku[r][i]]=1;
+
+    //Note no.s appeared in current column
+    for(i=0; i<size; i++)
+        b[sudoku[i][c]]=1;
+
+    //Note no.s appeared in current block
+    r=(r/s)*s, c=(c/s)*s;
+    for(i=r; i<r+s; i++)
+        for(j=c; j<c+s;j++)
+            b[sudoku[i][j]]=1;
+
+    //Fill array a[] with no.s unappeared in current row, column and block
+    for(i=1;i<=size; i++)
+        if(!b[i])
+            a[n++]=i;
+    return n;
+}
+
+void SolveSudoku(int sudoku[MAX][MAX], int size)
+{
+    int i,j, a[MAX+1]={0}, n=0;
+    if(isFull(sudoku, size))    //true if now sudoku board is solved completely
+    {
+        //show the solution
+        cout<<"\n\nSolution is"<<endl;
+        displaySolution(sudoku, size);
+         return;
+    }
+    //Find first vacant place/position
+    int break_flag = 0;
+    for(i=0;i<size;i++)
+    {
+        for(j=0;j<size;j++)
+            if(!sudoku[i][j])
+            {
+                break_flag = 1;
+                break;
+            }
+        if(break_flag)
+            break;
+    }
+    //check possibilities at that vacant place
+    n = findPossibleValues(sudoku, size, a, i, j);
+    for(int l=0;l<n;l++)
+    {
+        //put value at vacant place
+        sudoku[i][j]=a[l];
+        //now solve the updated board
+        SolveSudoku(sudoku, size);
+    }
+    sudoku[i][j]=0;
+}
+
+//Starting point
+int main()
+{
+    //Input
+    int sudoku[MAX][MAX] = {0}, size;
+    size = takeInput(sudoku);
+    bool solved_flag = 0;
+    SolveSudoku(sudoku, size);
+    return 0;
+}
+
+
+
